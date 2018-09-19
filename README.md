@@ -1,2 +1,2 @@
 # algs4
-Princeton Algorithm assignments
+This repository records the assignments I did during the time I was taking the course of Algorithm from Princeton University on coursera.com.
