@@ -6,8 +6,8 @@ public class MoveToFront {
 
     public static void encode() {
         LList<Character> alphabet = new LList<>();
-        for (char c = R - 1; c >= 0; c--) {
-            alphabet.addFirst(c);
+        for (int c = R - 1; c >= 0; c--) {
+            alphabet.addFirst((char) c);
         }
         while(!BinaryStdIn.isEmpty()) {
             char c = BinaryStdIn.readChar();
@@ -23,17 +23,29 @@ public class MoveToFront {
         for (char c = 0; c < R; c++) {
             alphabet[c] = c;
         }
+
         while(!BinaryStdIn.isEmpty()) {
-            int i = BinaryStdIn.readInt();
+            int i = BinaryStdIn.readChar();
             char c = alphabet[i];
             System.arraycopy(alphabet, 0, alphabet, 1, i);
             alphabet[0] = c;
             BinaryStdOut.write(c);
         }
+        BinaryStdIn.close();
         BinaryStdOut.close();
     }
 
+
     public static void main(String[] args) {
-        MoveToFront.encode();
+        if (args.length == 0) {
+            throw new java.lang.IllegalArgumentException();
+        }
+        if (args[0].equals("-")) {
+            MoveToFront.encode();
+        }
+        if (args[0].equals("+")) {
+            MoveToFront.decode();
+        }
     }
+
 }
