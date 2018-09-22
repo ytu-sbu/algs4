@@ -1,17 +1,13 @@
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
-import java.util.Arrays;
 
 public class BurrowsWheeler {
     private static final int R = 256;
 
     public static void transform() {
-        StringBuilder sb = new StringBuilder();
-        while (!BinaryStdIn.isEmpty()) {
-            sb.append(BinaryStdIn.readChar());
-        }
+        String sb = BinaryStdIn.readString();
         BinaryStdIn.close();
-        CircularSuffixArray csa = new CircularSuffixArray(sb.toString());
+        CircularSuffixArray csa = new CircularSuffixArray(sb);
         int first = -1;
         for (int i = 0; i < csa.length(); i++) {
             if (csa.index(i) == 0) {
@@ -30,21 +26,29 @@ public class BurrowsWheeler {
         BinaryStdOut.close();
     }
 
+    private static char[] radixSort(char[] unSort) {
+        int length = unSort.length;
+        char[] count = new char[R + 1];
+        for (int i = 0; i < length; i++) {
+            count[unSort[i] + 1] += 1;
+        }
+        for (int i = 1; i <= R; i++) {
+            count[i] += count[i - 1];
+        }
+        char[] sorted = new char[length];
+        for (int i = 0; i < length; i++) {
+            sorted[count[unSort[i]]++] = unSort[i];
+        }
+        return sorted;
+    }
+
     public static void inverseTransform() {
         int first = BinaryStdIn.readInt();
-        StringBuilder sb = new StringBuilder();
-        while (!BinaryStdIn.isEmpty()) {
-            sb.append(BinaryStdIn.readChar());
-        }
+        String sb = BinaryStdIn.readString();
         BinaryStdIn.close();
         int length = sb.length();
-        char[] t = new char[length];
-        for (int i = 0; i < length; i++) {
-            t[i] = sb.charAt(i);
-        }
-        char[] origin = new char[length];
-        System.arraycopy(t, 0, origin, 0, length);
-        Arrays.sort(origin);
+        char[] t = sb.toCharArray();
+        char[] origin = radixSort(t);
         int[] next = new int[length];
 
         int[] charCount = new int[R];
