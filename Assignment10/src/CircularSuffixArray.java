@@ -1,8 +1,6 @@
 import edu.princeton.cs.algs4.IndexMinPQ;
-import java.util.LinkedList;
 
 public class CircularSuffixArray {
-    private static final int R = 256;
     private final int length;
     private final int[] index;
 
@@ -14,46 +12,47 @@ public class CircularSuffixArray {
         length = s.length();
         index = new int[length];
 
-        //processing data
-        LinkedList<Integer> list = new LinkedList<>();
+        // processing data
         for (int i = 0; i < length; i++) {
-            list.add(i);
+            index[i] = i;
         }
-        strSort(s, list, 0, 0);
+        IndexMinPQ<Character> pq = new IndexMinPQ<>(length);
+        strSort(s, 0, length - 1, 0, pq);
     }
 
-    private int strSort(String s, LinkedList<Integer> list, int offset, int start) {
-        // otherwise there is only one element in bucket
-        if (list.size() ==1) {
-            index[start] = list.remove();
-            return start + 1;
+    private int getPos(int i, int d) {
+        int pos = i + d;
+        if (pos >= length) {
+            return pos - length;
         }
-        // more than one elements in bucket, sorting on
-        IndexMinPQ<Character> pq = new IndexMinPQ<>(length);
-        // put subStr id and key into minPQ
-        int size = list.size();
-        for (int i = 0, j; i < size; i++) {
-            j = list.remove();
-            int pos = j + offset;
-            if (pos >= length) {
-                pos -= length;
+        return pos;
+    }
+
+    private void strSort(String s, int lo, int hi, int d, IndexMinPQ<Character> pq) {
+        if (lo >= hi) {
+            return;
+        }
+        for (int i = lo; i <= hi; i++) {
+            pq.insert(index[i], s.charAt(getPos(index[i], d)));
+        }
+        for (int i = lo; i <= hi; i++) {
+            index[i] = pq.delMin();
+        }
+        char c = s.charAt(getPos(index[lo], d));
+        int start = lo;
+        for (int i = lo + 1; i <= hi; i++) {
+            if (c == s.charAt(getPos(index[i], d))) {
+                if (i == hi) {
+                    strSort(s, start, i, d + 1, pq);
+                }
+                else {
+                    continue;
+                }
             }
-            pq.insert(j, s.charAt(pos));
+            strSort(s, start, i - 1, d + 1, pq);
+            start = i;
+            c = s.charAt(getPos(index[i], d));
         }
-        // pop items and sort
-        char preKey = pq.minKey();
-        list.add(pq.delMin());
-        while (!pq.isEmpty()) {
-            if (pq.minKey() != preKey) {
-                start = strSort(s, list, offset + 1, start);
-                preKey = pq.minKey();
-            }
-            list.add(pq.delMin());
-        }
-        if (!list.isEmpty()) {
-            start = strSort(s, list, offset + 1, start);
-        }
-        return start;
     }
 
     public int length() {
