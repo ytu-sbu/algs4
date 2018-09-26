@@ -1,9 +1,9 @@
 public class LList<T> {
-    private Node first;
+    private final Node first;
 
     public class Node {
-        final T value;
-        Node next;
+        private final T value;
+        private Node next;
 
         public Node(T v, Node n) {
             value = v;
@@ -24,9 +24,9 @@ public class LList<T> {
         }
         Node preNode = first;
         char count = 0;
-        while (preNode.next.value != v) {
-                count += 1;
-                preNode = preNode.next;
+        while (!preNode.next.value.equals(v)) {
+            count += 1;
+            preNode = preNode.next;
         }
         if (preNode == first) {
             return count;
@@ -43,7 +43,7 @@ public class LList<T> {
     public String toString() {
         Node sentinel = first.next;
         StringBuilder sb = new StringBuilder();
-        while (sentinel!= null) {
+        while (sentinel != null) {
             sb.append(sentinel.value);
             sb.append(" ");
             sentinel = sentinel.next;
@@ -52,6 +52,13 @@ public class LList<T> {
         return sb.toString();
     }
 
+    // for testing
     public static void main(String[] args) {
+        LList<Character> alphabet = new LList<>();
+        for (int c = 255; c >= 0; c--) {
+            alphabet.addFirst((char) c);
+        }
+        System.out.println((int) (alphabet.moveToFront((char) 97)));
+        System.out.println((int) alphabet.moveToFront((char) 142));
     }
 }

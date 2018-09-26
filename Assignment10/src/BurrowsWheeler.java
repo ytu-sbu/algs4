@@ -26,49 +26,30 @@ public class BurrowsWheeler {
         BinaryStdOut.close();
     }
 
-    private static char[] radixSort(char[] unSort) {
-        int length = unSort.length;
-        char[] count = new char[R + 1];
-        for (int i = 0; i < length; i++) {
-            count[unSort[i] + 1] += 1;
-        }
-        for (int i = 1; i <= R; i++) {
-            count[i] += count[i - 1];
-        }
-        char[] sorted = new char[length];
-        for (int i = 0; i < length; i++) {
-            sorted[count[unSort[i]]++] = unSort[i];
-        }
-        return sorted;
-    }
-
     public static void inverseTransform() {
         int first = BinaryStdIn.readInt();
         String sb = BinaryStdIn.readString();
         BinaryStdIn.close();
         int length = sb.length();
         char[] t = sb.toCharArray();
-        char[] origin = radixSort(t);
+        char[] origin = new char[length];
         int[] next = new int[length];
+        char[] count = new char[R + 1];
 
-        int[] charCount = new int[R];
-        int[] charIndex = new int[length];
         for (int i = 0; i < length; i++) {
-            charIndex[i] = ++charCount[origin[i]];
+            count[t[i] + 1] += 1;
         }
+        for (int i = 1; i <= R; i++) {
+            count[i] += count[i - 1];
+        }
+        char c;
+        int j;
         for (int i = 0; i < length; i++) {
-            int count = charIndex[i];
-            for (int j = 0; j < length; j++) {
-                if (t[j] == origin[i]) {
-                    if (count > 1) {
-                        count -= 1;
-                    }
-                    else {
-                        next[i] = j;
-                        break;
-                    }
-                }
-            }
+            c = t[i];
+            j = count[c];
+            origin[j] = t[i];
+            next[j] = i;
+            count[c] += 1;
         }
 
         for (int i = 0; i < length; i++) {

@@ -1,6 +1,7 @@
-import edu.princeton.cs.algs4.IndexMinPQ;
 
 public class CircularSuffixArray {
+    private static final int R = 256;
+    private static final int M = 15;
     private final int length;
     private final int[] index;
 
@@ -13,11 +14,13 @@ public class CircularSuffixArray {
         index = new int[length];
 
         // processing data
+        // initialize index array
         for (int i = 0; i < length; i++) {
             index[i] = i;
         }
-        IndexMinPQ<Character> pq = new IndexMinPQ<>(length);
-        strSort(s, 0, length - 1, 0, pq);
+        // MSD radix sort
+        int[] aux = new int[length];
+        strSort(s, 0, length - 1, 0, aux);
     }
 
     private int getPos(int i, int d) {
@@ -28,31 +31,57 @@ public class CircularSuffixArray {
         return pos;
     }
 
-    private void strSort(String s, int lo, int hi, int d, IndexMinPQ<Character> pq) {
-        if (lo >= hi) {
+    private void strSort(String s, int lo, int hi, int d, int[] aux) {
+        // base case
+        if (lo >= hi || d >= length) {
             return;
         }
+        // do insertion Sort for String array with length less than or equals M
+        if (hi <= lo + M) {
+            insertSort(s, lo, hi, d);
+            return;
+        }
+        // MSD radix sort
+        int[] count = new int[R + 1];
         for (int i = lo; i <= hi; i++) {
-            pq.insert(index[i], s.charAt(getPos(index[i], d)));
+            count[s.charAt(getPos(index[i], d)) + 1] += 1;
+        }
+        for (int i = 0; i < R; i++) {
+            count[i + 1] += count[i];
         }
         for (int i = lo; i <= hi; i++) {
-            index[i] = pq.delMin();
+            aux[count[s.charAt(getPos(index[i], d))]++] = index[i];
         }
-        char c = s.charAt(getPos(index[lo], d));
-        int start = lo;
+        for (int i = lo; i <= hi; i++) {
+            index[i] = aux[i - lo];
+        }
+        strSort(s, lo, lo + count[0] - 1, d + 1, aux);
+        for (int i = 0; i < R; i++) {
+            strSort(s, lo + count[i], lo + count[i + 1] - 1, d + 1, aux);
+        }
+    }
+
+    private void insertSort(String s, int lo, int hi, int d) {
         for (int i = lo + 1; i <= hi; i++) {
-            if (c == s.charAt(getPos(index[i], d))) {
-                if (i == hi) {
-                    strSort(s, start, i, d + 1, pq);
-                }
-                else {
-                    continue;
-                }
+            for (int j = i; j > lo && aLessB(s, j, j - 1, d); j--) {
+                int tmp = index[j];
+                index[j] = index[j - 1];
+                index[j - 1] = tmp;
             }
-            strSort(s, start, i - 1, d + 1, pq);
-            start = i;
-            c = s.charAt(getPos(index[i], d));
         }
+    }
+
+    private boolean aLessB(String s, int a, int b, int d) {
+        for (int i = d; i < length; i++) {
+            if (s.charAt(getPos(index[a], i)) < s.charAt(getPos(index[b], i))) {
+                return true;
+            }
+            if (s.charAt(getPos(index[a], i)) > s.charAt(getPos(index[b], i))) {
+                return false;
+            }
+        }
+        // equal
+        return true;
     }
 
     public int length() {
@@ -67,7 +96,8 @@ public class CircularSuffixArray {
     }
 
     public static void main(String[] args) {
-        String s = "ABRACADABRA!";
+//        String s = "ABRACADABRA!";
+        String s = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
         CircularSuffixArray csa = new CircularSuffixArray(s);
         for (int i = 0; i < csa.length(); i++) {
             System.out.println(csa.index(i));

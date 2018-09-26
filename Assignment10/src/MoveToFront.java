@@ -9,8 +9,10 @@ public class MoveToFront {
         for (int c = R - 1; c >= 0; c--) {
             alphabet.addFirst((char) c);
         }
-        while(!BinaryStdIn.isEmpty()) {
+//        System.out.println(alphabet.toString());
+        while (!BinaryStdIn.isEmpty()) {
             char c = BinaryStdIn.readChar();
+//            System.out.println((int) c);
             char index = alphabet.moveToFront(c);
             BinaryStdOut.write(index);
         }
@@ -24,7 +26,7 @@ public class MoveToFront {
             alphabet[c] = c;
         }
 
-        while(!BinaryStdIn.isEmpty()) {
+        while (!BinaryStdIn.isEmpty()) {
             int i = BinaryStdIn.readChar();
             char c = alphabet[i];
             System.arraycopy(alphabet, 0, alphabet, 1, i);
